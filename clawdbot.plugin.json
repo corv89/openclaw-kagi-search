@@ -1,0 +1,24 @@
+{
+  "id": "kagi-search",
+  "name": "Kagi Search",
+  "description": "Search the web using the Kagi Search API — structured results with no AI synthesis",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "properties": {
+      "apiKey": {
+        "type": "string",
+        "description": "Kagi API key (overrides env var and file)"
+      },
+      "limit": {
+        "type": "number",
+        "description": "Default max results to return (1-20)",
+        "default": 5
+      }
+    }
+  },
+  "uiHints": {
+    "apiKey": { "label": "API Key", "sensitive": true },
+    "limit": { "label": "Default result limit", "placeholder": "5" }
+  }
+}
