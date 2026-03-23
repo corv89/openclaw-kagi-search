@@ -14,11 +14,16 @@
         "type": "number",
         "description": "Default max results to return (1-20)",
         "default": 5
+      },
+      "tavilyApiKey": {
+        "type": "string",
+        "description": "Tavily API key (overrides TAVILY_API_KEY env var and file)"
       }
     }
   },
   "uiHints": {
-    "apiKey": { "label": "API Key", "sensitive": true },
-    "limit": { "label": "Default result limit", "placeholder": "5" }
+    "apiKey": { "label": "Kagi API Key", "sensitive": true },
+    "limit": { "label": "Default result limit", "placeholder": "5" },
+    "tavilyApiKey": { "label": "Tavily API Key", "sensitive": true }
   }
 }
