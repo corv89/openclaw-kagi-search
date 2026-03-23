@@ -7,7 +7,8 @@ Returns **structured results** (title, URL, snippet, published date) — no AI s
 ## Prerequisites
 
 - [OpenClaw](https://github.com/openclaw/openclaw) installed and running
-- A [Kagi Search API](https://kagi.com/settings?p=api) key (currently in private beta — [$25 per 1,000 queries](https://help.kagi.com/kagi/api/search.html))
+- A [Kagi Search API](https://kagi.com/settings?p=api) key (currently in private beta — [$25 per 1,000 queries](https://help.kagi.com/kagi/api/search.html)) **and/or**
+- A [Tavily API key](https://app.tavily.com) (1,000 free credits/month)
 
 ## Install
 
@@ -29,11 +30,21 @@ openclaw gateway restart
 
 ## Configuration
 
+### Kagi API Key
+
 The plugin looks for your Kagi API key in three places (first match wins):
 
 1. **Plugin config** — `plugins.entries.kagi-search.config.apiKey`
 2. **Environment variable** — `KAGI_API_KEY`
 3. **File** — `~/.config/kagi/api_key`
+
+### Tavily API Key
+
+The plugin looks for your Tavily API key in three places (first match wins):
+
+1. **Plugin config** — `plugins.entries.kagi-search.config.tavilyApiKey`
+2. **Environment variable** — `TAVILY_API_KEY`
+3. **File** — `~/.config/tavily/api_key`
 
 ### Option 1: Plugin config
 
@@ -47,6 +58,7 @@ Add to your OpenClaw config:
         enabled: true,
         config: {
           apiKey: "your-kagi-api-key",
+          tavilyApiKey: "tvly-your-tavily-api-key",
           limit: 10  // optional, default: 5
         }
       }
@@ -55,34 +67,43 @@ Add to your OpenClaw config:
 }
 ```
 
-### Option 2: Environment variable
+### Option 2: Environment variables
 
 ```bash
 export KAGI_API_KEY="your-kagi-api-key"
+export TAVILY_API_KEY="tvly-your-tavily-api-key"
 ```
 
-### Option 3: Key file
+### Option 3: Key files
 
 ```bash
 mkdir -p ~/.config/kagi
 echo -n "your-kagi-api-key" > ~/.config/kagi/api_key
 chmod 600 ~/.config/kagi/api_key
+
+mkdir -p ~/.config/tavily
+echo -n "tvly-your-tavily-api-key" > ~/.config/tavily/api_key
+chmod 600 ~/.config/tavily/api_key
 ```
 
 ## Usage
 
-Once installed, OpenClaw gains the `kagi_search` tool. The agent will use it automatically when appropriate, or you can ask directly:
+Once installed, OpenClaw gains the `kagi_search` and `tavily_search` tools. The agent will use them automatically when appropriate, or you can ask directly:
 
 > Search Kagi for "rust async runtime benchmarks"
 
+> Search Tavily for "rust async runtime benchmarks"
+
 ### Tool parameters
+
+Both tools share the same parameters:
 
 | Parameter | Type   | Required | Description                          |
 |-----------|--------|----------|--------------------------------------|
 | `query`   | string | yes      | Search query                         |
 | `limit`   | number | no       | Max results to return (1–20, default 5) |
 
-### Example output
+### Example output (kagi_search)
 
 ```
 1. **Tokio vs async-std benchmarks**
@@ -98,16 +119,33 @@ Once installed, OpenClaw gains the `kagi_search` tool. The agent will use it aut
 _Kagi Search · 2 results · 213ms · balance: $4.97_
 ```
 
-## Kagi Search vs Perplexity (web_search)
+### Example output (tavily_search)
 
-| Feature | `kagi_search` | `web_search` (Perplexity) |
-|---------|--------------|--------------------------|
-| Output | Raw structured results | AI-synthesized answer |
-| Links | Direct URLs per result | Citations in prose |
-| Best for | Finding specific pages, research | Quick answers, summaries |
-| Pricing | $0.025/query | Per-token via API |
+```
+1. **Tokio vs async-std benchmarks**
+   https://example.com/benchmarks
+   A comprehensive comparison of Rust async runtimes...
+   Published: 2026-01-15
 
-Both tools coexist — OpenClaw picks the right one based on context.
+2. **Understanding Rust's async ecosystem**
+   https://example.com/async-rust
+   Deep dive into how async/await works in Rust...
+
+---
+_Tavily Search · 2 results · 850ms_
+```
+
+## Tool comparison
+
+| Feature | `kagi_search` | `tavily_search` | `web_search` (Perplexity) |
+|---------|--------------|-----------------|--------------------------|
+| Output | Raw structured results | LLM-optimised structured results | AI-synthesized answer |
+| Links | Direct URLs per result | Direct URLs per result | Citations in prose |
+| Best for | Finding specific pages, research | LLM-friendly search, agentic workflows | Quick answers, summaries |
+| Pricing | $0.025/query | 1,000 free/month, then usage-based | Per-token via API |
+| API access | Private beta | Open sign-up | Via OpenClaw built-in |
+
+All three tools coexist — OpenClaw picks the right one based on context.
 
 ## License
 
